@@ -17,6 +17,13 @@ class Cardinality  implements \JsonSerializable
         $this->raw = $raw;
         $data=explode(',', $raw);
 
+        if(count($data) < 2) {
+            $data=explode(';', $raw);
+        }
+        if(count($data) < 2) {
+            $data=explode('/', $raw);
+        }
+
         if(count($data) === 2) {
             $this->min = trim($data[0]);
             $this->max = trim($data[1]);

@@ -43,7 +43,7 @@ class Entity extends AbstractEntity
      */
     public function isReal()
     {
-        if($this->primaryKey && count($this->fields) < 2) {
+        if(count($this->fields) < 2 && count($this->inherits) == 0) {
             return false;
         }
 

@@ -186,8 +186,6 @@ class Graph implements \JsonSerializable
         }
     }
 
-
-
     public function getEntities()
     {
         return $this->entities;

@@ -59,12 +59,12 @@ class Entity extends Driver
                 $instructions[$field->getName()] = $fieldExporter->getSQL();
             }
 
-            // $instructions[] = '';
-
             $extendedFields = $this->getExtendedFields();
             $instructions = array_merge($instructions, $extendedFields['instructions']);
             $indexes = array_merge($indexes, $extendedFields['indexes']);
 
+
+            // IMPORTANT buggued
             $foreignKeys = $this->getForeignKeys();
             $instructions = array_merge($instructions, $foreignKeys['instructions']);
             $indexes = array_merge($indexes, $foreignKeys['indexes']);
@@ -119,6 +119,7 @@ class Entity extends Driver
         ];
     }
 
+    // IMPORTANT handle relation x,1  x,1
     protected function getForeignKeys()
     {
         $entity = $this->getEntity();
@@ -132,14 +133,19 @@ class Entity extends Driver
 
             if($relation->foreignKeyOn($entity)) {
 
+                // relation has already handled
                 if(isset($generatedRelations[$relation->getId()])) {
                     continue;
                 }
+
+                // register relation
                 $generatedRelations[$relation->getId()] = true;
 
+                // handling relation name
                 if($relation->getLabel()) {
                     $fieldName = $relation->getLabel();
                 }
+
 
                 if ($relation->getFrom() === $entity) {
                     $targetEntity = $relation->getTo();
@@ -152,13 +158,16 @@ class Entity extends Driver
                     $fieldName = $targetEntity->getName() . '_id';
                 }
 
-                $instructions[] ="-- ======= FOREIGN KEY TO `{$targetEntity->getName()}`========";
-                $field = new McdField();
-                $field->setName($fieldName);
-                $field->setType($targetEntity->getPrimaryKey()->getType());
 
-                $fieldExporter = new Field($field);
-                $instructions[] = $fieldExporter->getSQL(false);
+                if($relation->getFromCardinality()->getMax() == 1 && $relation->getTo() === $entity) {
+                    $instructions[] = "-- ======= FOREIGN KEY TO `{$targetEntity->getName()}`========";
+                    $field = new McdField();
+                    $field->setName($fieldName);
+                    $field->setType($targetEntity->getPrimaryKey()->getType());
+
+                    $fieldExporter = new Field($field);
+                    $instructions[] = $fieldExporter->getSQL(false);
+                }
             }
         }
         return [
