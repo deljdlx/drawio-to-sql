@@ -1,7 +1,5 @@
 <?php
-
 namespace JDLX\DrawioMCDConverter;
-
 
 class Cardinality  implements \JsonSerializable
 {
@@ -65,6 +63,4 @@ class Cardinality  implements \JsonSerializable
             'max' => $this->max
         ];
     }
-
-
 }

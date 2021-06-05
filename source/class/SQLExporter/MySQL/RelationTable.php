@@ -106,8 +106,4 @@ class RelationTable extends Driver
         }
         return $this->relationTable->getFrom()->getName() . '_' .$this->relationTable->getTo()->getName();
     }
-
-
-
-
 }

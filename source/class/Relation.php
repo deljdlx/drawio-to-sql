@@ -1,12 +1,8 @@
 <?php
-
 namespace JDLX\DrawioMCDConverter;
-
 
 class Relation implements \JsonSerializable
 {
-
-
     public const TYPE_INHERIT = 'inherit';
     public const TYPE_RELATION = 'relation';
 
@@ -17,7 +13,6 @@ class Relation implements \JsonSerializable
      * @var Entity
      */
     protected $from;
-
 
     /**
      * @var Entity
@@ -59,7 +54,6 @@ class Relation implements \JsonSerializable
         else if($this->type == static::TYPE_INHERIT) {
             $this->from->inherit($this->to);
         }
-
     }
 
 
@@ -81,7 +75,6 @@ class Relation implements \JsonSerializable
                 return true;
             }
         }
-
         return false;
     }
 
@@ -93,7 +86,6 @@ class Relation implements \JsonSerializable
 
         $relationTable = new RelationTable($this->from, $this->to, $this);
         return $relationTable;
-
     }
 
     public function isNN()
@@ -148,8 +140,6 @@ class Relation implements \JsonSerializable
 
             $this->fromCardinality = new Cardinality($cardinality);
         }
-
-
         return $this->fromCardinality;
     }
 
@@ -168,7 +158,6 @@ class Relation implements \JsonSerializable
             }
             $this->toCardinality = new Cardinality($cardinality);
         }
-
         return $this->toCardinality;
     }
 
@@ -214,3 +203,4 @@ class Relation implements \JsonSerializable
         ];
     }
 }
+

@@ -1,5 +1,4 @@
 <?php
-
 namespace JDLX\DrawioMCDConverter;
 
 use JDLX\DrawioMCDConverter\SQLExporter\MySQL\Entity as MysqlEntity;
@@ -14,13 +13,10 @@ class Entity extends AbstractEntity
     protected $value;
     protected $dataNode;
 
-
     protected $id;
     protected $name;
 
     protected $primaryKey;
-
-
 
     public function __construct($graph, $xmlNode = null)
     {
@@ -63,9 +59,6 @@ class Entity extends AbstractEntity
 
         return $this;
     }
-
-
-
 
     /**
      * @return Relation[]

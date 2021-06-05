@@ -86,6 +86,4 @@ class Field extends Driver
 
         return static::TYPE_DEFAULT;
     }
-
-
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace JDLX\DrawioMCDConverter;
 
 use JDLX\DrawioMCDConverter\SQLExporter\MySQL\RelationTable as MySQLRelationTable;
@@ -79,4 +78,3 @@ class RelationTable
         return $expoter->getSQL($dropIfExists);
     }
 }
-

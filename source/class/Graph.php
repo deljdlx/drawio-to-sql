@@ -1,7 +1,6 @@
 <?php
 namespace JDLX\DrawioMCDConverter;
 
-
 class Graph implements \JsonSerializable
 {
     protected $file;
@@ -16,12 +15,10 @@ class Graph implements \JsonSerializable
      */
     protected $entities = [];
 
-
     /**
      * @var AbstractEntity[]
      */
     protected $abstractEntities = [];
-
 
     /**
      * @var Relation[]
@@ -48,7 +45,6 @@ class Graph implements \JsonSerializable
         $this->extractRelations();
     }
 
-
     public function getSQL($dropIfExists = false)
     {
         $sql = '';
@@ -60,16 +56,13 @@ class Graph implements \JsonSerializable
 
             }
         }
-
         foreach($this->relations as $relation) {
             if($relation->isNN()) {
                 $sql .= $relation->getRelationTable()->getSQL($dropIfExists);
             }
         }
-
         return $sql;
     }
-
 
     public function extractExtends()
     {
@@ -94,32 +87,10 @@ class Graph implements \JsonSerializable
                     $this->extends[$relation->getId()] = $relation;
                 }
                 else {
-
-                    echo '<div style="border: solid 2px #F00">';
-                        echo '<div style="; background-color:#CCC">@'.__FILE__.' : '.__LINE__.'</div>';
-                        echo '<pre style="background-color: rgba(0,255,255, 0.8);">';
-                        print_r(json_encode($source, JSON_PRETTY_PRINT));
-                        echo '</pre>';
-                    echo '</div>';
-                    echo '<div style="border: solid 2px #F00">';
-                        echo '<div style="; background-color:#CCC">@'.__FILE__.' : '.__LINE__.'</div>';
-                        echo '<pre style="background-color: rgba(0,255,255, 0.8);">';
-                        print_r(json_encode($target, JSON_PRETTY_PRINT));
-                        echo '</pre>';
-                    echo '</div>';
-
-
-
-                    echo '<div style="border: solid 2px #F00">';
-                        echo '<div style="; background-color:#CCC">@'.__FILE__.' : '.__LINE__.'</div>';
-                        echo '<pre style="background-color: rgba(255,255,255, 0.8);">';
-                        print_r($node);
-                        echo '</pre>';
-                    echo '</div>';
+                    // nothing here yet
                 }
             }
         }
-
         return $this;
     }
 

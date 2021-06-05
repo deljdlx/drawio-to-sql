@@ -1,13 +1,8 @@
 <?php
-
 namespace JDLX\DrawioMCDConverter;
-
-
 
 class Field extends Entity
 {
-
-
     public const TYPE_AUTO_ID = 'auto_id';
 
     protected $name;
@@ -33,7 +28,6 @@ class Field extends Entity
         return $this->type;
     }
 
-
     /**
      * @param string $type
      * @return this
@@ -44,7 +38,6 @@ class Field extends Entity
         return $this;
     }
 
-
     public function autoincrement($value = null)
     {
         if($value === null) {
@@ -54,7 +47,6 @@ class Field extends Entity
         $this->autoincrement = $value;
         return $this;
     }
-
 
     public function jsonSerialize()
     {
