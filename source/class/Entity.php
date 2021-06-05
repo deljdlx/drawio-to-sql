@@ -20,15 +20,6 @@ class Entity extends AbstractEntity
 
     protected $primaryKey;
 
-    /**
-     * @var Relation[]
-     */
-    protected $relations = [];
-
-    /**
-     * @var AbstractEntity[]
-     */
-    protected $inherits = [];
 
 
     public function __construct($graph, $xmlNode = null)
@@ -43,7 +34,14 @@ class Entity extends AbstractEntity
      */
     public function isReal()
     {
-        if(count($this->fields) < 2 && count($this->inherits) == 0) {
+
+        if(count($this->fields) < 2 && count($this->getParentEntities()) == 0) {
+            echo '<div style="border: solid 2px #F00">';
+                echo '<div style="; background-color:#CCC">@'.__FILE__.' : '.__LINE__.'</div>';
+                echo '<pre style="background-color: rgba(255,0,255, 0.8);">';
+                print_r($this->getName());
+                echo '</pre>';
+            echo '</div>';
             return false;
         }
 
@@ -66,18 +64,7 @@ class Entity extends AbstractEntity
         return $this;
     }
 
-    public function addRelation($relation)
-    {
-        $this->relations[] = $relation;
-        return $this;
-    }
 
-
-    public function inherit($abstractEntity)
-    {
-        $this->inherits[] = $abstractEntity;
-        return $this;
-    }
 
 
     /**
@@ -88,13 +75,7 @@ class Entity extends AbstractEntity
         return $this->relations;
     }
 
-    /**
-     * @return AbstractEntity[]
-     */
-    public function getParentEntities()
-    {
-        return $this->inherits;
-    }
+
 
     /**
      * @param string $id

@@ -20,6 +20,18 @@ class AbstractEntity implements \JsonSerializable
     protected $fields = [];
 
 
+    /**
+     * @var AbstractEntity[]
+     */
+    protected $parentEntities = [];
+
+    /**
+     * @var Relation[]
+     */
+    protected $relations = [];
+
+
+
     protected $value;
     protected $dataNode;
 
@@ -40,7 +52,62 @@ class AbstractEntity implements \JsonSerializable
                 $this->dataNode = $dataNode[0];
             }
         }
-        $this->extractSubEntities();
+        $this->extractFields();
+    }
+
+    public function addRelation($relation)
+    {
+        $this->relations[] = $relation;
+        return $this;
+    }
+
+
+    public function inherit($abstractEntity)
+    {
+        $this->parentEntities[] = $abstractEntity;
+        return $this;
+    }
+
+
+    /**
+     * @return AbstractEntity[]
+     */
+    public function getParentEntities()
+    {
+        $parentEntities = $this->parentEntities;
+
+        foreach($parentEntities as $parentEntity) {
+            $parentEntities = array_merge($parentEntities, $parentEntity->getParentEntities());
+        }
+
+        return $parentEntities;
+    }
+
+
+    /**
+     * @return Field[]
+     */
+    public function getFields()
+    {
+        $fields = $this->fields;
+
+        $fields = array_merge($fields, $this->getParentFields());
+        return $fields;
+        // return $this->fields;
+    }
+
+
+    public function getParentFields()
+    {
+        // $fields = $this->fields;
+        $fields = [];
+        $fields = $this->fields;
+        $parentEntities = $this->getParentEntities();
+
+        foreach($parentEntities as $parentEntity) {
+            $fields = array_merge($fields, $parentEntity->getParentFields());
+        }
+        return $fields;
     }
 
 
@@ -53,14 +120,14 @@ class AbstractEntity implements \JsonSerializable
     }
 
 
-    public function extractSubEntities()
+    public function extractFields()
     {
         $query = '//mxCell[@parent="' . $this->getId()  . '"]';
         $nodes = $this->xml->xPath($query);
 
         foreach($nodes as $node) {
             $entity = new Field($this, $node);
-            $this->fields[$entity->getId()] = $entity;
+            $this->fields[$entity->getName()] = $entity;
         }
     }
 
@@ -97,14 +164,6 @@ class AbstractEntity implements \JsonSerializable
     }
 
 
-    /**
-     * @return Field[]
-     */
-    public function getFields()
-    {
-        return $this->fields;
-    }
-
 
     public function getData($key = null)
     {
@@ -136,7 +195,6 @@ class AbstractEntity implements \JsonSerializable
             return (string) $this->xml['value'];
         }
     }
-
 
     public function getId()
     {

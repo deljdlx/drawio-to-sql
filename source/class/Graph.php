@@ -81,7 +81,7 @@ class Graph implements \JsonSerializable
             if(preg_match('`endArrow=block`', (string) $node['style'])) {
 
                 $source = $this->getEntityById((string) $node['source']);
-                $target = $this->getAbstractEntityById((string) $node['target']);
+                $target = $this->getEntityById((string) $node['target']);
 
                 if($source && $target) {
                     $relation = new Relation(
@@ -92,6 +92,30 @@ class Graph implements \JsonSerializable
                         Relation::TYPE_INHERIT
                     );
                     $this->extends[$relation->getId()] = $relation;
+                }
+                else {
+
+                    echo '<div style="border: solid 2px #F00">';
+                        echo '<div style="; background-color:#CCC">@'.__FILE__.' : '.__LINE__.'</div>';
+                        echo '<pre style="background-color: rgba(0,255,255, 0.8);">';
+                        print_r(json_encode($source, JSON_PRETTY_PRINT));
+                        echo '</pre>';
+                    echo '</div>';
+                    echo '<div style="border: solid 2px #F00">';
+                        echo '<div style="; background-color:#CCC">@'.__FILE__.' : '.__LINE__.'</div>';
+                        echo '<pre style="background-color: rgba(0,255,255, 0.8);">';
+                        print_r(json_encode($target, JSON_PRETTY_PRINT));
+                        echo '</pre>';
+                    echo '</div>';
+
+
+
+                    echo '<div style="border: solid 2px #F00">';
+                        echo '<div style="; background-color:#CCC">@'.__FILE__.' : '.__LINE__.'</div>';
+                        echo '<pre style="background-color: rgba(255,255,255, 0.8);">';
+                        print_r($node);
+                        echo '</pre>';
+                    echo '</div>';
                 }
             }
         }
@@ -170,6 +194,9 @@ class Graph implements \JsonSerializable
     {
         if(isset($this->entities[$id])) {
             return $this->entities[$id];
+        }
+        elseif(isset($this->abstractEntities[$id])) {
+            return $this->abstractEntities[$id];
         }
         else {
             return false;

@@ -59,11 +59,6 @@ class Entity extends Driver
                 $instructions[$field->getName()] = $fieldExporter->getSQL();
             }
 
-            $extendedFields = $this->getExtendedFields();
-            $instructions = array_merge($instructions, $extendedFields['instructions']);
-            $indexes = array_merge($indexes, $extendedFields['indexes']);
-
-
             // IMPORTANT buggued
             $foreignKeys = $this->getForeignKeys();
             $instructions = array_merge($instructions, $foreignKeys['instructions']);
@@ -95,28 +90,6 @@ class Entity extends Driver
         $sql .= 'ENGINE="InnoDB"' .";\n";
 
         return $sql;
-    }
-
-    protected function getExtendedFields()
-    {
-        $entity = $this->getEntity();
-        $instructions = [];
-        $indexes = [];
-
-
-        foreach($entity->getParentEntities() as $parentEntity) {
-            foreach($parentEntity->getFields() as $field) {
-                $exporter = new Field($field);
-
-                $instructions[] = "-- INHERITED FIELD `{$field->getName()}` FROM `{$parentEntity->getName()}`";
-                $instructions[] = $exporter->getSQL(false);
-            }
-        }
-
-        return [
-            'instructions' => $instructions,
-            'indexes' => $indexes
-        ];
     }
 
     // IMPORTANT handle relation x,1  x,1
