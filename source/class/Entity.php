@@ -111,10 +111,10 @@ class Entity extends AbstractEntity
         return $this->primaryKey;
     }
 
-    public function getSQL()
+    public function getSQL($dropIfExists = false)
     {
         $exporter = new MysqlEntity($this);
-        return $exporter->getSQL();
+        return $exporter->getSQL($dropIfExists);
     }
 
     public function getIdFieldName()

@@ -73,10 +73,10 @@ class RelationTable
     /**
      * @return string
      */
-    public function getTableDefinition()
+    public function getSQL($dropIfExists = false)
     {
         $expoter = new MySQLRelationTable($this);
-        return $expoter->getSQL();
+        return $expoter->getSQL($dropIfExists);
     }
 }
 

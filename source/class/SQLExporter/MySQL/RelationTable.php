@@ -21,14 +21,22 @@ class RelationTable extends Driver
     /**
      * @return string
      */
-    public function getSQL()
+    public function getSQL($dropIfExists = false)
     {
 
         $relation = $this->relationTable;
+        $sql ='';
 
 
+        if($dropIfExists) {
+            $sql .= "-- ===========================================================\n";
+            $sql .= "-- DROPPING TABLE FOR ENTITY " . $this->getTableName() . "\n";
+            $sql .= "-- ===========================================================\n";
+            $sql .= "DROP TABLE IF EXISTS {$this->escape($this->getTableName())};\n";
+        }
 
-        $sql = "-- ============================================================================\n";
+
+        $sql .= "-- ============================================================================\n";
         $sql .= "-- RELATION TABLE CREATION BETWEEN `" . $relation->getFrom()->getName() . "` TABLE AND `" . $relation->getTo()->getName() . "` TABLE\n";
         $sql .= "-- ===========================================================================\n\n";
 

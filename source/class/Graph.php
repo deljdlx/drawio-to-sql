@@ -49,12 +49,12 @@ class Graph implements \JsonSerializable
     }
 
 
-    public function getSQL()
+    public function getSQL($dropIfExists = false)
     {
         $sql = '';
         foreach($this->entities as $entity) {
             if($entity->isReal()) {
-                $sql .= $entity->getSQL() . "\n";
+                $sql .= $entity->getSQL($dropIfExists) . "\n";
             }
             else {
 
@@ -63,7 +63,7 @@ class Graph implements \JsonSerializable
 
         foreach($this->relations as $relation) {
             if($relation->isNN()) {
-                $sql .= $relation->getRelationTable()->getTableDefinition();
+                $sql .= $relation->getRelationTable()->getSQL($dropIfExists);
             }
         }
 

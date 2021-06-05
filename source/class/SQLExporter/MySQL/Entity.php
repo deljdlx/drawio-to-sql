@@ -30,15 +30,24 @@ class Entity extends Driver
     }
 
 
-    public function getSQL()
+    public function getSQL($dropIfExists = false)
     {
         $entity = $this->getEntity();
         $instructions = [];
         $indexes = [];
+        $sql ='';
 
-        $sql =  "-- ===========================================================\n";
-        $sql .=  "-- CREATE TABLE FOR ENTITY \"" . $entity->getName() . "\"\n";
-        $sql .=  "-- ===========================================================\n";
+
+        if($dropIfExists) {
+            $sql .= "-- ===========================================================\n";
+            $sql .= "-- DROPPING TABLE FOR ENTITY `" . $entity->getName() . "`\n";
+            $sql .= "-- ===========================================================\n";
+            $sql .= "DROP TABLE IF EXISTS {$this->escape($entity->getName())};\n";
+        }
+
+        $sql .= "-- ===========================================================\n";
+        $sql .= "-- CREATE TABLE FOR ENTITY `" . $entity->getName() . "`\n";
+        $sql .= "-- ===========================================================\n";
 
 
         $sql .= 'CREATE TABLE ' . $this->escape($entity->getName()) . ' (' . "\n";
@@ -91,18 +100,21 @@ class Entity extends Driver
     protected function getExtendedFields()
     {
         $entity = $this->getEntity();
-        $fields = [];
+        $instructions = [];
         $indexes = [];
 
 
         foreach($entity->getParentEntities() as $parentEntity) {
             foreach($parentEntity->getFields() as $field) {
+                $exporter = new Field($field);
 
+                $instructions[] = "-- INHERITED FIELD `{$field->getName()}` FROM `{$parentEntity->getName()}`";
+                $instructions[] = $exporter->getSQL(false);
             }
         }
 
         return [
-            'instructions' => $fields,
+            'instructions' => $instructions,
             'indexes' => $indexes
         ];
     }
@@ -113,7 +125,6 @@ class Entity extends Driver
         $instructions = [];
         $indexes = [];
 
-        // IMPORTANT corriger ici ; problème sur la génération des foreign keys
         $generatedRelations = [];
         foreach($entity->getRelations() as $relation) {
 
