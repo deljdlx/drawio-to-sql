@@ -38,15 +38,7 @@ class Field extends Entity
         return $this;
     }
 
-    public function autoincrement($value = null)
-    {
-        if($value === null) {
-            return $this->autoincrement;
-        }
 
-        $this->autoincrement = $value;
-        return $this;
-    }
 
     public function jsonSerialize()
     {

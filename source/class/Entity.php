@@ -16,7 +16,6 @@ class Entity extends AbstractEntity
     protected $id;
     protected $name;
 
-    protected $primaryKey;
 
     public function __construct($graph, $xmlNode = null)
     {
@@ -31,13 +30,8 @@ class Entity extends AbstractEntity
     public function isReal()
     {
 
+        // NOTICE 2 fields because there is alway an id field
         if(count($this->fields) < 2 && count($this->getParentEntities()) == 0) {
-            echo '<div style="border: solid 2px #F00">';
-                echo '<div style="; background-color:#CCC">@'.__FILE__.' : '.__LINE__.'</div>';
-                echo '<pre style="background-color: rgba(255,0,255, 0.8);">';
-                print_r($this->getName());
-                echo '</pre>';
-            echo '</div>';
             return false;
         }
 
@@ -46,28 +40,6 @@ class Entity extends AbstractEntity
         }
         return true;
     }
-
-    public function createPrimaryKeyField()
-    {
-        $this->primaryKey = new Field($this->graph);
-        $this->primaryKey->autoincrement(true);
-        $this->primaryKey->setType(Field::TYPE_AUTO_ID);
-        $this->primaryKey->setId('id');
-        $this->primaryKey->setName('id');
-
-        array_unshift($this->fields, $this->primaryKey);
-
-        return $this;
-    }
-
-    /**
-     * @return Relation[]
-     */
-    public function getRelations()
-    {
-        return $this->relations;
-    }
-
 
 
     /**
@@ -80,10 +52,6 @@ class Entity extends AbstractEntity
         return $this;
     }
 
-    public function getPrimaryKey()
-    {
-        return $this->primaryKey;
-    }
 
     public function getSQL($dropIfExists = false)
     {

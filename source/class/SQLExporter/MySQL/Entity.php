@@ -4,6 +4,7 @@ namespace JDLX\DrawioMCDConverter\SQLExporter\MySQL;
 
 use JDLX\DrawioMCDConverter\Entity as McdEntity;
 use JDLX\DrawioMCDConverter\Field as McdField;
+use JDLX\DrawioMCDConverter\Relation;
 
 class Entity extends Driver
 {
@@ -52,19 +53,16 @@ class Entity extends Driver
 
         $sql .= 'CREATE TABLE ' . $this->escape($entity->getName()) . ' (' . "\n";
 
-
-
             foreach($entity->getFields() as $field) {
                 $fieldExporter = new Field($field);
                 $instructions[$field->getName()] = $fieldExporter->getSQL();
             }
 
-            // IMPORTANT buggued
             $foreignKeys = $this->getForeignKeys();
             $instructions = array_merge($instructions, $foreignKeys['instructions']);
             $indexes = array_merge($indexes, $foreignKeys['indexes']);
 
-            $sql .= implode(",\n", $instructions);
+            $sql .= '    ' . implode(",\n    ", $instructions);
             $sql .= ",\n";
 
             // handling timestamp fields==============
@@ -114,26 +112,16 @@ class Entity extends Driver
                 // register relation
                 $generatedRelations[$relation->getId()] = true;
 
-                // handling relation name
-                if($relation->getLabel()) {
-                    $fieldName = $relation->getLabel();
-                }
+                $targetEntity = $entity->getTargetEntityFromRelation($relation);
 
+                $fieldName = $this->getForeignKeyName($relation);
 
-                if ($relation->getFrom() === $entity) {
-                    $targetEntity = $relation->getTo();
-                }
-                else {
-                    $targetEntity = $relation->getFrom();
-                }
-
-                if(!$fieldName) {
-                    $fieldName = $targetEntity->getName() . '_id';
-                }
-
-
-                if($relation->getFromCardinality()->getMax() == 1 && $relation->getTo() === $entity) {
+                if(
+                    ($relation->getFromCardinality()->getMax() == 1 && $relation->getToCardinality()->getMax() == 'n')
+                    || ($relation->getToCardinality()->getMax() == 1 && $relation->getFromCardinality()->getMax() == 'n')
+                ) {
                     $instructions[] = "-- ======= FOREIGN KEY TO `{$targetEntity->getName()}`========";
+
                     $field = new McdField();
                     $field->setName($fieldName);
                     $field->setType($targetEntity->getPrimaryKey()->getType());
@@ -141,11 +129,37 @@ class Entity extends Driver
                     $fieldExporter = new Field($field);
                     $instructions[] = $fieldExporter->getSQL(false);
                 }
+
             }
         }
         return [
             'instructions' => $instructions,
             'indexes' => $indexes
         ];
+    }
+
+
+    /**
+     * @param Relation $relation
+     * @return string
+     */
+
+    protected function getForeignKeyName($relation)
+    {
+        $entity =  $this->getEntity();
+        $fieldName = '';
+
+        $targetEntity = $entity->getTargetEntityFromRelation($relation);
+
+        // handling relation name
+        if($relation->getLabel()) {
+            $fieldName = $relation->getLabel();
+        }
+
+        if(!$fieldName) {
+            $fieldName = $targetEntity->getName() . '_id';
+        }
+
+        return $fieldName;
     }
 }

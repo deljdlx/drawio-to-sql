@@ -25,6 +25,8 @@ class AbstractEntity implements \JsonSerializable
      */
     protected $parentEntities = [];
 
+    protected $virtualFields = [];
+
     /**
      * @var Relation[]
      */
@@ -55,6 +57,32 @@ class AbstractEntity implements \JsonSerializable
         $this->extractFields();
     }
 
+    /**
+     * @param Relation $relation
+     * @return Entity
+     */
+    public function getTargetEntityFromRelation($relation)
+    {
+        $targetEntity = null;
+
+        if ($relation->getFrom() === $this) {
+            $targetEntity = $relation->getTo();
+        }
+        else {
+            foreach($this->getParentEntities() as $parentEntity) {
+                if ($relation->getFrom() === $parentEntity) {
+                    $targetEntity = $relation->getTo();
+                    break;
+                }
+            }
+        }
+
+        if(!$targetEntity) {
+            $targetEntity = $relation->getFrom();
+        }
+        return $targetEntity;
+    }
+
     public function addRelation($relation)
     {
         $this->relations[] = $relation;
@@ -69,6 +97,52 @@ class AbstractEntity implements \JsonSerializable
     }
 
 
+    public function getPrimaryKey()
+    {
+        return $this->primaryKey;
+    }
+
+
+    public function createPrimaryKeyField()
+    {
+        $this->primaryKey = new Field($this->graph);
+        $this->primaryKey->setType(Field::TYPE_AUTO_ID);
+        $this->primaryKey->setId('id');
+        $this->primaryKey->setName('id');
+
+        array_unshift($this->fields, $this->primaryKey);
+
+        return $this;
+    }
+
+
+    public function getVirtualFields()
+    {
+        $fields = $this->virtualFields;
+
+        $parentEntities = $this->getParentEntities();
+
+        foreach($parentEntities as $parentEntity) {
+            $fields = array_merge($fields, $parentEntity->getVirtualFields());
+        }
+        return $fields;
+    }
+
+    /**
+     * @return Relation[]
+     */
+    public function getRelations()
+    {
+        $relations = $this->relations;
+
+        $parentEntities = $this->getParentEntities();
+        foreach($parentEntities as $parentEntity) {
+            $relations = array_merge($relations, $parentEntity->getRelations());
+        }
+        return $relations;
+    }
+
+
     /**
      * @return AbstractEntity[]
      */
@@ -79,7 +153,6 @@ class AbstractEntity implements \JsonSerializable
         foreach($parentEntities as $parentEntity) {
             $parentEntities = array_merge($parentEntities, $parentEntity->getParentEntities());
         }
-
         return $parentEntities;
     }
 
@@ -90,22 +163,20 @@ class AbstractEntity implements \JsonSerializable
     public function getFields()
     {
         $fields = $this->fields;
-
         $fields = array_merge($fields, $this->getParentFields());
         return $fields;
-        // return $this->fields;
     }
 
-
+    /**
+     * @return Field[]
+     */
     public function getParentFields()
     {
-        // $fields = $this->fields;
         $fields = [];
-        $fields = $this->fields;
         $parentEntities = $this->getParentEntities();
 
         foreach($parentEntities as $parentEntity) {
-            $fields = array_merge($fields, $parentEntity->getParentFields());
+            $fields = array_merge($fields, $parentEntity->getFields());
         }
         return $fields;
     }
@@ -126,8 +197,13 @@ class AbstractEntity implements \JsonSerializable
         $nodes = $this->xml->xPath($query);
 
         foreach($nodes as $node) {
-            $entity = new Field($this, $node);
-            $this->fields[$entity->getName()] = $entity;
+            $field = new Field($this, $node);
+            if(!preg_match('`^#`', $field->getName())) {
+                $this->fields[$field->getName()] = $field;
+            }
+            else {
+                $this->virtualFields[$field->getName()] = $field;
+            }
         }
     }
 

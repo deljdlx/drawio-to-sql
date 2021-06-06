@@ -37,7 +37,10 @@ class Relation implements \JsonSerializable
     protected $type;
 
 
-    public function __construct($graph, $xmlNode, $from = null, $to = null, $type = self::TYPE_RELATION)
+    protected $id;
+
+
+    public function __construct($graph, $xmlNode = null, $from = null, $to = null, $type = self::TYPE_RELATION)
     {
         $this->graph = $graph;
         $this->xml = $xmlNode;
@@ -47,9 +50,13 @@ class Relation implements \JsonSerializable
         $this->type = $type;
 
         if($this->type == static::TYPE_RELATION) {
-            $this->extractCardinality();
+            if($this->xml) {
+                $this->extractCardinality();
+            }
+
             $this->from->addRelation($this);
             $this->to->addRelation($this);
+
         }
         else if($this->type == static::TYPE_INHERIT) {
             $this->from->inherit($this->to);
@@ -72,6 +79,12 @@ class Relation implements \JsonSerializable
         elseif($entity->getId() == $this->getTo()->getId()) {
             $cardinality = $this->getToCardinality();
             if($cardinality->requireForeignKey()) {
+                return true;
+            }
+        }
+
+        foreach($entity->getParentEntities() as $parentEntity) {
+            if($this->foreignKeyOn($parentEntity)) {
                 return true;
             }
         }
@@ -111,6 +124,19 @@ class Relation implements \JsonSerializable
     {
         return $this->to;
     }
+
+    public function setFromCardinality($min, $max)
+    {
+        $this->fromCardinality = new Cardinality("$min,$max");
+        return $this;
+    }
+
+    public function setToCardinality($min, $max)
+    {
+        $this->ToCardinality = new Cardinality("$min,$max");
+        return $this;
+    }
+
 
 
     /**
@@ -188,7 +214,16 @@ class Relation implements \JsonSerializable
      */
     public function getId()
     {
-        return (string) $this->xml['id'];
+        if(!$this->id) {
+            if($this->xml) {
+                $this->id =  (string) $this->xml['id'];
+            }
+            else {
+                $this->id = uniqid();
+            }
+        }
+
+        return $this->id;
     }
 
     public function jsonSerialize()

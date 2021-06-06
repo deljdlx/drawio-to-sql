@@ -33,7 +33,6 @@ class Field extends Driver
         else {
             return $fieldName . ' ' . $this->getType();
         }
-
     }
 
 

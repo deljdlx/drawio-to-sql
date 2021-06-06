@@ -10,15 +10,18 @@ class Graph implements \JsonSerializable
      */
     protected $xml;
 
-    /**
-     * @var Entity[]
-     */
+    /** @var Entity[] */
     protected $entities = [];
 
-    /**
-     * @var AbstractEntity[]
-     */
+    /** @var Entity[] */
+    protected $entitiesByName = [];
+
+
+    /** @var AbstractEntity[] */
     protected $abstractEntities = [];
+
+    /** @var AbstractEntity[] */
+    protected $abstractEntitiesByName = [];
 
     /**
      * @var Relation[]
@@ -64,8 +67,43 @@ class Graph implements \JsonSerializable
         return $sql;
     }
 
+
+    protected function extractVirtualExtends($source)
+    {
+        foreach($source as $entity) {
+            $fields = $entity->getVirtualFields();
+
+            foreach($fields as $field) {
+
+                $source = $entity;
+                $target = $this->getEntityByName($field->getName());
+
+                if($source && $target) {
+
+                    $relation = new Relation(
+                        $this,
+                        null,
+                        $source,
+                        $target,
+                        Relation::TYPE_INHERIT
+                    );
+
+                    $relation->setFromCardinality('', '');
+                    $relation->setToCardinality('', '');
+
+                    $this->extends[$relation->getId()] = $relation;
+                }
+            }
+        }
+    }
+
     public function extractExtends()
     {
+
+        $this->extractVirtualExtends($this->entities);
+        $this->extractVirtualExtends($this->abstractEntities);
+
+
         $query = '//mxCell[@source and @target]';
         $nodes = $this->xml->xPath($query);
 
@@ -109,6 +147,7 @@ class Graph implements \JsonSerializable
             if(preg_match('`dashed=1`', (string) $node['style'])) {
                 $entity = new AbstractEntity($this, $node);
                 $this->abstractEntities[$entity->getId()] = $entity;
+                $this->abstractEntitiesByName[$entity->getName()] = $entity;
             }
         }
 
@@ -130,6 +169,7 @@ class Graph implements \JsonSerializable
             if(!preg_match('`dashed=1`', (string) $node['style'])) {
                 $entity = new Entity($this, $node);
                 $this->entities[$entity->getId()] = $entity;
+                $this->entitiesByName[$entity->getName()] = $entity;
             }
         }
 
@@ -158,6 +198,22 @@ class Graph implements \JsonSerializable
             else {
                 // nothing yet
             }
+        }
+    }
+
+
+    public function getEntityByName($name)
+    {
+        $name = preg_replace('`^#`', '', $name);
+
+        if(isset($this->entitiesByName[$name])) {
+            return $this->entitiesByName[$name];
+        }
+        elseif(isset($this->abstractEntitiesByName[$name])) {
+            return $this->abstractEntitiesByName[$name];
+        }
+        else {
+            return false;
         }
     }
 
