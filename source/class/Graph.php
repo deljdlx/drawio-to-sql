@@ -33,20 +33,38 @@ class Graph implements \JsonSerializable
      */
     protected $extends = [];
 
-    public function __construct($file)
+    public function __construct($file = null)
     {
         $this->file = $file;
 
-        $this->xml = simplexml_load_file($this->file);
+        if($this->file) {
+            $this-> loadFile($file);
+        }
+    }
+
+    public function loadXML($xml)
+    {
+        $this->xml = simplexml_load_string($xml);
+        $this->build();
+    }
 
 
+    public function loadFile($file)
+    {
+        $this->xml = simplexml_load_file($file);
+        $this->build();
+    }
+
+    protected function build()
+    {
         $this->extractAbstractEntities();
         $this->extractEntities();
-
         $this->extractExtends();
-
         $this->extractRelations();
     }
+
+
+
 
     public function getSQL($dropIfExists = false)
     {
