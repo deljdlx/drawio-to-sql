@@ -8,7 +8,13 @@ class Field extends Entity
     protected $name;
     protected $type;
 
+    protected $nullAllowed = true;
+
     protected $autoincrement = false;
+
+
+    protected $defaultValue;
+
 
     public function __construct($graph = null, $xmlNode = null)
     {
@@ -23,8 +29,44 @@ class Field extends Entity
         }
     }
 
+    public function getDefaultValue()
+    {
+        if($this->dataNode) {
+            $attributes = $this->dataNode->attributes();
+
+            if(isset($attributes['DEFAULT'])) {
+                return $this->dataNode['DEFAULT'];
+            }
+        }
+        return null;
+    }
+
+
+    public function nullAllowed()
+    {
+        if($this->dataNode) {
+            $attributes = $this->dataNode->attributes();
+
+            if(isset($attributes['NOT_NULL'])) {
+                return false;
+            }
+        }
+        return $this->nullAllowed;
+    }
+
+
     public function getType()
     {
+        if(!$this->type) {
+            if($this->dataNode) {
+                if($this->dataNode['type']) {
+                    $this->type = (string) $this->dataNode['type'];
+                }
+                elseif($this->dataNode['TYPE']) {
+                    $this->type = (string) $this->dataNode['TYPE'];
+                }
+            }
+        }
         return $this->type;
     }
 

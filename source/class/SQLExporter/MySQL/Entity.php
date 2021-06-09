@@ -91,6 +91,7 @@ class Entity extends Driver
     }
 
     // IMPORTANT handle relation x,1  x,1
+    // BUG relation n/n sur meme entité
     protected function getForeignKeys()
     {
         $entity = $this->getEntity();

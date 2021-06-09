@@ -8,14 +8,19 @@ class Field extends Driver
 {
     public const TYPE_DEFAULT = 'VARCHAR(255)';
     public const TYPE_ID = 'BIGINT(16) UNSIGNED';
+    public const TYPE_TEXT = 'TEXT';
+    public const TYPE_STRING_DEFAULT = 'VARCHAR(255)';
 
     /**
      * @var DrawioMCDConverterField
      */
     protected $field;
 
-
+    /**
+     * @var string
+     */
     protected $type;
+
 
     public function __construct($field)
     {
@@ -36,14 +41,59 @@ class Field extends Driver
     }
 
 
+    public function getDefaultValue()
+    {
+        $defaultValue = $this->field->getDefaultValue();
+
+
+        if(strtolower($defaultValue) == 'now') {
+            return 'CURRENT_TIMESTAMP';
+        }
+        elseif($defaultValue) {
+            $value = $this->protectValue($defaultValue);
+
+            return "'" . $value . "'";
+        }
+
+        return null;
+    }
+
+
+    // WARNING unsafe function
+    protected function protectValue($value)
+    {
+        $value = str_replace("\\", "\\\\'", $value);
+        $value = str_replace("'", "\'", $value);
+
+        return $value;
+    }
+
     public function getDeclaration()
     {
         $sql = $this->getType();
+
+        if($default = $this->getDefaultValue()) {
+            $sql .= " DEFAULT ". $default . "";
+        }
+
+        if(!$this->nullAllowed()) {
+            $sql .= ' NOT NULL';
+        }
+
         if($this->field->getType() == DrawioMCDConverterField::TYPE_AUTO_ID) {
             $sql .= ' AUTO_INCREMENT';
         }
 
         return $sql;
+    }
+
+
+    public function nullAllowed()
+    {
+        if($this->field->getType() == DrawioMCDConverterField::TYPE_AUTO_ID) {
+            return false;
+        }
+        return $this->field->nullAllowed();
     }
 
 
@@ -53,11 +103,14 @@ class Field extends Driver
     public function getType()
     {
         if(!$this->type) {
-            $type = $this->field->getType();
+            $type = strtolower($this->field->getType());
 
             if($type) {
                 if($type == 'string') {
-                    $this->type = 'VARCHAR(255)';
+                    $this->type = static::TYPE_STRING_DEFAULT;
+                }
+                elseif($type == 'text') {
+                    $this->type = static::TYPE_TEXT;
                 }
                 elseif($type == DrawioMCDConverterField::TYPE_AUTO_ID) {
                     $this->type = static::TYPE_ID;
@@ -69,6 +122,7 @@ class Field extends Driver
         }
         return $this->type;
     }
+
 
     public function findType()
     {
