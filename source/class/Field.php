@@ -42,6 +42,9 @@ class Field extends Entity
     }
 
 
+    /**
+     * @return bool
+     */
     public function nullAllowed()
     {
         if($this->dataNode) {

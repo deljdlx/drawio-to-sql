@@ -88,6 +88,10 @@ class Field extends Driver
     }
 
 
+    /**
+     *
+     * @return bool
+     */
     public function nullAllowed()
     {
         if($this->field->getType() == DrawioMCDConverterField::TYPE_AUTO_ID) {
