@@ -52,6 +52,10 @@ class Entity extends AbstractEntity
         return $this;
     }
 
+    /**
+     * @param bool $dropIfExists
+     * @return string
+     */
 
     public function getSQL($dropIfExists = false)
     {
@@ -59,10 +63,18 @@ class Entity extends AbstractEntity
         return $exporter->getSQL($dropIfExists);
     }
 
+    /**
+     * @return string
+     */
+
     public function getIdFieldName()
     {
         return 'id';
     }
+
+    /**
+     * @return array
+     */
 
     public function jsonSerialize()
     {

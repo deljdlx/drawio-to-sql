@@ -31,6 +31,9 @@ class Entity extends Driver
     }
 
 
+    /**
+     * @return string
+     */
     public function getSQL($dropIfExists = false)
     {
         $entity = $this->getEntity();

@@ -68,6 +68,9 @@ class Field extends Driver
         return $value;
     }
 
+    /**
+     * @return string
+     */
     public function getDeclaration()
     {
         $sql = $this->getType();
@@ -128,6 +131,9 @@ class Field extends Driver
     }
 
 
+    /**
+     * @return string
+     */
     public function findType()
     {
 

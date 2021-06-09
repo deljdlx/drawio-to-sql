@@ -97,6 +97,9 @@ class RelationTable extends Driver
     }
 
 
+    /**
+     * @return string
+     */
     public function getTableName()
     {
         if($relation = $this->relationTable->getRelation()) {
