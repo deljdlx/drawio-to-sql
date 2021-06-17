@@ -4,7 +4,7 @@
 
 spl_autoload_register(function ($calledClassName) {
 
-    $namespace = "JDLX\DrawioMCDConverter";
+    $namespace = "JDLX\DrawioConverter";
     $classFolderName = "class";
 
     $normalizedClassName = preg_replace('`^\\\\`', '', $calledClassName);

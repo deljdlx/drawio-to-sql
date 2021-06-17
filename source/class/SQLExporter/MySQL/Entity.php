@@ -1,10 +1,10 @@
 <?php
 
-namespace JDLX\DrawioMCDConverter\SQLExporter\MySQL;
+namespace JDLX\DrawioConverter\SQLExporter\MySQL;
 
-use JDLX\DrawioMCDConverter\Entity as McdEntity;
-use JDLX\DrawioMCDConverter\Field as McdField;
-use JDLX\DrawioMCDConverter\Relation;
+use JDLX\DrawioConverter\Entity as McdEntity;
+use JDLX\DrawioConverter\Field as McdField;
+use JDLX\DrawioConverter\Relation;
 
 class Entity extends Driver
 {

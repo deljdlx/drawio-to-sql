@@ -1,8 +1,8 @@
 <?php
 
-namespace JDLX\DrawioMCDConverter\SQLExporter\MySQL;
+namespace JDLX\DrawioConverter\SQLExporter\MySQL;
 
-use JDLX\DrawioMCDConverter\Field as DrawioMCDConverterField;
+use JDLX\DrawioConverter\Field as DrawioMCDConverterField;
 
 class Field extends Driver
 {

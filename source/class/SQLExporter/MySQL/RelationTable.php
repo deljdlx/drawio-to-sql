@@ -1,9 +1,9 @@
 <?php
 
-namespace JDLX\DrawioMCDConverter\SQLExporter\MySQL;
+namespace JDLX\DrawioConverter\SQLExporter\MySQL;
 
-use JDLX\DrawioMCDConverter\Field as MCDField;
-use JDLX\DrawioMCDConverter\RelationTable as DrawioMCDConverterRelationTable;
+use JDLX\DrawioConverter\Field as MCDField;
+use JDLX\DrawioConverter\RelationTable as DrawioMCDConverterRelationTable;
 
 class RelationTable extends Driver
 {

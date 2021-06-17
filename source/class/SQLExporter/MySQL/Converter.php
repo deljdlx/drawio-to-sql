@@ -1,6 +1,6 @@
 <?php
 
-namespace JDLX\DrawioMCDConverter\SQLExporter\MySQL;
+namespace JDLX\DrawioConverter\SQLExporter\MySQL;
 
 
 class Converter
