@@ -1,8 +1,8 @@
 <?php
 namespace JDLX\DrawioMCDConverter;
 
-use JDLX\DrawioMCDConverter\SQLExporter\MySQL\Entity as MysqlEntity;
 use JDLX\DrawioMCDConverter\Traits\Timestamped;
+use SimpleXMLElement;
 
 class Entity extends AbstractEntity
 {
@@ -11,6 +11,10 @@ class Entity extends AbstractEntity
     public const TYPE_AUTO_COMPUTED = 'auto_computed';
 
     protected $value;
+
+    /**
+     * @var SimpleXMLElement
+     */
     protected $dataNode;
 
     protected $id;
@@ -52,16 +56,6 @@ class Entity extends AbstractEntity
         return $this;
     }
 
-    /**
-     * @param bool $dropIfExists
-     * @return string
-     */
-
-    public function getSQL($dropIfExists = false)
-    {
-        $exporter = new MysqlEntity($this);
-        return $exporter->getSQL($dropIfExists);
-    }
 
     /**
      * @return string

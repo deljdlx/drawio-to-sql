@@ -32,11 +32,8 @@ class AbstractEntity implements \JsonSerializable
      */
     protected $relations = [];
 
-
-
     protected $value;
     protected $dataNode;
-
 
     protected $id;
     protected $name;

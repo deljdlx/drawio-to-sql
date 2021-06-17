@@ -66,26 +66,6 @@ class Graph implements \JsonSerializable
 
 
 
-    public function getSQL($dropIfExists = false)
-    {
-        $sql = '';
-        foreach($this->entities as $entity) {
-            if($entity->isReal()) {
-                $sql .= $entity->getSQL($dropIfExists) . "\n";
-            }
-            else {
-
-            }
-        }
-        foreach($this->relations as $relation) {
-            if($relation->isNN()) {
-                $sql .= $relation->getRelationTable()->getSQL($dropIfExists);
-            }
-        }
-        return $sql;
-    }
-
-
     protected function extractVirtualExtends($source)
     {
         foreach($source as $entity) {
@@ -261,6 +241,11 @@ class Graph implements \JsonSerializable
     public function getEntities()
     {
         return $this->entities;
+    }
+
+    public function getRelations()
+    {
+        return $this->relations;
     }
 
     public function getId()

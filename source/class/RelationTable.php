@@ -1,7 +1,6 @@
 <?php
 namespace JDLX\DrawioMCDConverter;
 
-use JDLX\DrawioMCDConverter\SQLExporter\MySQL\RelationTable as MySQLRelationTable;
 use JDLX\DrawioMCDConverter\Traits\Timestamped;
 
 class RelationTable
@@ -67,14 +66,5 @@ class RelationTable
     public function getRelation()
     {
         return $this->relation;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSQL($dropIfExists = false)
-    {
-        $expoter = new MySQLRelationTable($this);
-        return $expoter->getSQL($dropIfExists);
     }
 }
