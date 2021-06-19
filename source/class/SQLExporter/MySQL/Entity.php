@@ -108,7 +108,7 @@ class Entity extends Driver
 
             if($relation->foreignKeyOn($entity)) {
 
-                // relation has already handled
+                // relation already handled
                 if(isset($generatedRelations[$relation->getId()])) {
                     continue;
                 }
@@ -132,6 +132,8 @@ class Entity extends Driver
 
                     $fieldExporter = new Field($field);
                     $instructions[] = $fieldExporter->getSQL(false);
+
+                    $indexes[$fieldName] = $fieldName;
                 }
 
             }
@@ -161,9 +163,29 @@ class Entity extends Driver
         }
 
         if(!$fieldName) {
-            $fieldName = $targetEntity->getName() . '_id';
+            if($this->isSelfRelation($relation)) {
+                $fieldName = 'parent_id';
+            }
+            else {
+                $fieldName = $targetEntity->getName() . '_id';
+            }
         }
 
         return $fieldName;
+    }
+
+    /**
+     * @param Relation $relation
+     * @return boolean
+     */
+    public function isSelfRelation($relation)
+    {
+        $entity =  $this->getEntity();
+        $targetEntity = $entity->getTargetEntityFromRelation($relation);
+
+        if($entity === $targetEntity) {
+            return true;
+        }
+        return false;
     }
 }

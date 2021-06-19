@@ -31,7 +31,7 @@ class Field extends Driver
     public function getSQL($isDeclaration = true)
     {
         $field = $this->field;
-        $fieldName = $this->escape($field->getName());
+        $fieldName = $this->escape($this->normalize($field->getName()));
         if($isDeclaration) {
             return $fieldName . ' ' . $this->getDeclaration();
         }
